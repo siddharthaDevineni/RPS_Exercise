@@ -7,26 +7,23 @@ import { useEffect, useState } from 'react';
 import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
 import { useBalance, useContractRead } from 'wagmi';
 import { Address } from 'viem';
+import { notification } from "~~/utils/scaffold-eth";
 
 export const Winner = () => {
-  // const [winner, setWinner] = useState<string>();
-  
-  // const client = createPublicClient({
-  //     chain: hardhat,
-  //     transport: http(),
-  // })
   let winner: string;
-  let j1BalanceBeforeSolve: bigint = 0n;
-  let j2BalanceBeforeSolve: bigint = 0n;
-  let j1BalanceAfterSolve: bigint = 0n;
-  let j2BalanceAfterSolve: bigint = 0n;
-  let stakeBeforeSolve: bigint = 0n;
+  let j1BalanceBeforeSolve: string = "";
+  let j2BalanceBeforeSolve: string = "";
+  let j1BalanceAfterSolve: string = "";
+  let j2BalanceAfterSolve: string = "";
+  let stakeNonZero: number;
   const {data: stake} = useContractRead({
     address: useDeployedContractInfo("RPS").data?.address as Address,
     abi: useDeployedContractInfo("RPS").data?.abi,
     functionName: "stake"
   })
-  stakeBeforeSolve = stake? stake: 0n;
+  if(stake){
+    stakeNonZero = Number(ethers.formatEther(stake));
+  }
   const {data: j1} = useContractRead({ 
     address: useDeployedContractInfo("RPS").data?.address as Address,
     abi: useDeployedContractInfo("RPS").data?.abi,
@@ -41,15 +38,13 @@ export const Winner = () => {
     const {data: balj1BS} = useBalance({
       address: j1,
       onSuccess(data) {
-        j1BalanceBeforeSolve = balj1BS?.value!;
-        console.log("j1BalanceBeforeSolve: ", j1BalanceBeforeSolve);
+        j1BalanceBeforeSolve = balj1BS?.formatted!;
       },
     })
     const {data: balj2BS} = useBalance({
       address: j2,
       onSuccess(data) {
-        j2BalanceBeforeSolve = balj2BS?.value!;
-        console.log("j2BalanceBeforeSolve: ", j2BalanceBeforeSolve);
+        j2BalanceBeforeSolve = balj2BS?.formatted!;
       },
     })
   }
@@ -57,30 +52,29 @@ export const Winner = () => {
     const {data: balj1AS} = useBalance({
       address: j1,
       onSuccess(data) {
-        j1BalanceAfterSolve = balj1AS?.value!;
-        console.log("j1BalanceAfterSolve: ", j1BalanceAfterSolve);
+        j1BalanceAfterSolve = balj1AS?.formatted!;
       },
     })
     const {data: balj2AS} = useBalance({
       address: j2,
       onSuccess(data) {
-        j2BalanceAfterSolve = balj2AS?.value!;
-        console.log("j2BalanceAfterSolve: ", j2BalanceAfterSolve);
+        j2BalanceAfterSolve = balj2AS?.formatted!;
       },
     })
   }
-  if (Math.abs(Number(j1BalanceBeforeSolve) - Number(j1BalanceAfterSolve)) === Number(stakeBeforeSolve)) {
+  if (Math.abs(Number(j1BalanceBeforeSolve) - Number(j1BalanceAfterSolve)) == stakeNonZero!) {
     winner = "j1";
   }
-  if (Math.abs(Number(j2BalanceBeforeSolve) - Number(j2BalanceAfterSolve)) === Number(stakeBeforeSolve)) {
+  if (Math.abs(Number(j2BalanceBeforeSolve) - Number(j2BalanceAfterSolve)) == stakeNonZero!) {
     winner = "j2";
   }
   else{
-    winner = "tie";
+    winner = "tie game";
   }
 
   const revealWinner = () => {
     console.log("winner is: ", winner);
+    notification.success(`winner is: ${winner}`);
   }
 
   return (

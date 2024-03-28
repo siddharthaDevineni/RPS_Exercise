@@ -8,7 +8,6 @@ the extent permitted by applicable law. You can redistribute it
 and/or modify it under the terms of the Do What The Fuck You Want
 To Public License, Version 2, as published by Sam Hocevar. See
 http://www.wtfpl.net/ for more details. */
-import "hardhat/console.sol";
 pragma solidity ^0.4.26;
 
 contract RPS{

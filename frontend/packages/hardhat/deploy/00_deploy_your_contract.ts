@@ -24,14 +24,14 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   const { deploy } = hre.deployments;
 
   const abiCoder = new ethers.AbiCoder();
-  const hashResult = ethers.keccak256(abiCoder.encode(["uint8", "uint256"], [1, 1])); // move, salt
-  console.log("hashResult: ", hashResult); 
+  const hashResult = ethers.keccak256(abiCoder.encode(["uint8", "uint256"], [1, 1])); // move, salt by j1
+  console.log("hashResult: ", hashResult);
   
   await deploy("RPS", {
     from: deployer,
     // Contract constructor arguments
-    args: [hashResult, "0xE5D66682f152b630EdD3c55499F27dA14c18cBB6"],
-    value: "1000000000000000000",
+    args: [hashResult, "0x70997970C51812dc3A010C7d01b50e0d17dc79C8"], // c1Hash, j2
+    value: "1000000000000000000", // 1 ETH
     log: true,
     // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
     // automatically mining the contract deployment transaction. There is no effect on live networks.
@@ -40,10 +40,6 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   
   // Get the deployed contract to interact with it after deploying.
   const rps = await hre.ethers.getContract<Contract>("RPS", deployer);
-  console.log("RPS deployed at:", await rps.getAddress());
-  console.log("contract j2: ", await rps.j2());
-  console.log("contract stake: ", await rps.stake());
-  console.log("contract c1: ", await rps.c1Hash());
 };
 
 export default deployYourContract;
